@@ -808,6 +808,54 @@ void kernelInsertSensorData(ProbabilisticVoxel* voxelmap, const uint32_t voxelma
   }
 }
 
+__host__ __device__
+float kernelCalcAdditiveProbability(float current_probability, float new_probability) {
+	return (float) current_probability + new_probability * (((.5 - current_probability) * atan(2 * new_probability)) + .25 * (current_probability + 1));
+}
+
+/* Insert sensor data into voxel map.
+ * Assumes sensor data is already transformed
+ * into world coordinate system.
+ * If cut_real_robot is enabled one has to
+ * specify pointer to the robot voxel map.
+ * The robot voxels will be assumed 100% certain
+ * and cut from sensor data.
+ * See also function with ray casting.
+ */
+__global__
+void kernelInsertMultiSensorData(ProbabilisticVoxel* voxelmap, const uint32_t voxelmap_size,
+							const Vector3ui dimensions, const float voxel_side_length, const Vector3f sensor_pose,
+							const Vector3f* sensor_data, const size_t num_points, const bool cut_real_robot, const uint32_t bit_index, const float sensor_trust)
+{
+	for (uint32_t i = blockIdx.x * blockDim.x + threadIdx.x; (i < voxelmap_size) && (i < num_points);
+		 i += gridDim.x * blockDim.x)
+	{
+		if (!(isnan(sensor_data[i].x) || isnan(sensor_data[i].y) || isnan(sensor_data[i].z)))
+		{
+			const Vector3ui integer_coordinates = mapToVoxels(voxel_side_length, sensor_data[i]);
+			const Vector3ui sensor_coordinates = mapToVoxels(voxel_side_length, sensor_pose);
+
+			/* both data and sensor coordinates must
+			 be within boundaries for raycasting to work */
+			if ((integer_coordinates.x < dimensions.x) && (integer_coordinates.y < dimensions.y)
+				&& (integer_coordinates.z < dimensions.z) && (sensor_coordinates.x < dimensions.x)
+				&& (sensor_coordinates.y < dimensions.y) && (sensor_coordinates.z < dimensions.z))
+			{
+				bool update = false;
+
+
+				ProbabilisticVoxel* voxel = getVoxelPtr(voxelmap, dimensions, integer_coordinates.x,
+														integer_coordinates.y, integer_coordinates.z);
+				Probability current = ProbabilisticVoxel::probabilityToFloat(voxel->occupancy());
+				voxel->updateOccupancy(ProbabilisticVoxel::floatToProbability(kernelCalcAdditiveProbability(ProbabilisticVoxel::probabilityToFloat(voxel->occupancy()), sensor_trust)));
+				//voxel->updateOccupancy(ProbabilisticVoxel::floatToProbability(ProbabilisticVoxel::probabilityToFloat(voxel->occupancy()) + sensor_trust));
+
+
+			}
+		}
+	}
+}
+
 template<std::size_t length>
 __global__
 void kernelShiftBitVector(BitVoxel<length>* voxelmap,

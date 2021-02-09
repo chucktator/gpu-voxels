@@ -186,6 +186,15 @@ GpuVoxelsMapSharedPtr GpuVoxels::addMap(const MapType map_type, const std::strin
       break;
     }
 
+	  case MT_PROBAB_MULTI_VOXELMAP:
+	  {
+		  voxelmap::MultiProbVoxelMap* orig_map = new voxelmap::MultiProbVoxelMap(m_dim, m_voxel_side_length, MT_PROBAB_MULTI_VOXELMAP);
+		  VisVoxelMap* vis_map = new VisVoxelMap(orig_map, map_name);
+		  map_shared_ptr = GpuVoxelsMapSharedPtr(orig_map);
+		  vis_map_shared_ptr = VisProviderSharedPtr(vis_map);
+		  break;
+	  }
+
     case MT_BITVECTOR_VOXELLIST:
     {
       voxellist::BitVectorVoxelList* orig_list = new voxellist::BitVectorVoxelList(m_dim, m_voxel_side_length, MT_BITVECTOR_VOXELLIST);

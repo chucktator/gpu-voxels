@@ -70,6 +70,7 @@ enum MapType {
   MT_BITVECTOR_MORTON_VOXELLIST, // List of     deterministic Voxels (identified by a Morton Code)                      that hold a Bitvector
 
   MT_PROBAB_VOXELMAP,            // 3D-Array of probabilistic Voxels (identified by their Voxelmap-like Pointer adress) that hold a Probability
+  MT_PROBAB_MULTI_VOXELMAP,      // 3D-Array of probabilistic Voxels (identified by their Voxelmap-like Pointer adress) that hold a Probability and can calculate correspondences between multiple sensors
   MT_PROBAB_VOXELLIST,           // List of     probabilistic Voxels (identified by their Voxelmap-like Pointer adress) that hold a Probability
   MT_PROBAB_OCTREE,              // Octree of   probabilistic Voxels (identified by a Morton Code)                      that hold a Probability
   MT_PROBAB_MORTON_VOXELLIST,    // List of     probabilistic Voxels (identified by a Morton Code)                      that hold a Probability
@@ -166,6 +167,7 @@ namespace voxelmap {
 
 // Forwards declaration of needed classes
 class ProbVoxelMap;
+class MultiProbVoxelMap;
 
 template<std::size_t length>
 class BitVoxelMap;

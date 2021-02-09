@@ -285,6 +285,10 @@ void registerVoxelmapFromSharedMemory(uint32_t index)
         voxel_map = new voxelmap::ProbVoxelMap((ProbabilisticVoxel*) dev_data_pointer, dim,
                                                voxel_side_length, MT_PROBAB_VOXELMAP);
         break;
+	  case MT_PROBAB_MULTI_VOXELMAP:
+		  voxel_map = new voxelmap::MultiProbVoxelMap((ProbabilisticVoxel*) dev_data_pointer, dim,
+												 voxel_side_length, MT_PROBAB_MULTI_VOXELMAP);
+		  break;
       case MT_DISTANCE_VOXELMAP:
         voxel_map = new voxelmap::DistanceVoxelMap((DistanceVoxel*) dev_data_pointer, dim,
                                                voxel_side_length, MT_DISTANCE_VOXELMAP);

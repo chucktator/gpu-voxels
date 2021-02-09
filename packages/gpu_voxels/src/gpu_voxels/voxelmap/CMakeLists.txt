@@ -20,6 +20,7 @@ ICMAKER_ADD_HEADERS(
   AbstractVoxelMap.h
   BitVoxelMap.h
   ProbVoxelMap.h
+  MultiProbVoxelMap.h
   TemplateVoxelMap.h
   VoxelMap.h
   DistanceVoxelMap.h
@@ -41,6 +42,8 @@ ICMAKER_ADD_CUDA_FILES(
   BitVoxelMap.hpp
   ProbVoxelMap.h
   ProbVoxelMap.hpp
+  MultiProbVoxelMap.h
+  MultiProbVoxelMap.hpp
   TemplateVoxelMap.h
   TemplateVoxelMap.hpp
   VoxelMap.cu

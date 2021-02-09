@@ -668,6 +668,24 @@ bool Visualizer::fillGLBufferWithoutPrecounting(VoxelmapContext* context)
         thrust::raw_pointer_cast(m_cur_context->m_d_prefixes.data()));/**/
     CHECK_CUDA_ERROR();
   }
+  else if(context->m_voxelMap->getMapType() == MT_PROBAB_MULTI_VOXELMAP)
+  {
+	  fill_vbo_without_precounting<<<context->m_num_blocks, context->m_threads_per_block>>>(
+		  /**/
+		  (ProbabilisticVoxel*) context->m_voxelMap->getVoidDeviceDataPtr(),/**/
+		  context->m_voxelMap->getDimensions(),/**/
+		  m_cur_context->m_dim_svoxel,/**/
+		  m_cur_context->m_view_start_voxel_pos,/**/
+		  m_cur_context->m_view_end_voxel_pos,/**/
+		  context->m_occupancy_threshold,/**/
+		  vbo_ptr,/**/
+		  thrust::raw_pointer_cast(context->m_d_vbo_offsets.data()),/**/
+		  thrust::raw_pointer_cast(context->m_d_vbo_segment_voxel_capacities.data()),/**/
+		  thrust::raw_pointer_cast(indices.data()),/**/
+		  thrust::raw_pointer_cast(m_cur_context->m_d_draw_types.data()),/**/
+		  thrust::raw_pointer_cast(m_cur_context->m_d_prefixes.data()));/**/
+	  CHECK_CUDA_ERROR();
+  }
   else if(context->m_voxelMap->getMapType() == MT_DISTANCE_VOXELMAP)
   {
     fill_vbo_without_precounting<<<context->m_num_blocks, context->m_threads_per_block>>>(

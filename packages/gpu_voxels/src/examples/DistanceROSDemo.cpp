@@ -62,7 +62,8 @@ using gpu_voxels::voxellist::CountingVoxelList;
 
 shared_ptr<GpuVoxels> gvl;
 
-Vector3ui map_dimensions(256, 256, 256);
+//Vector3ui map_dimensions(256, 256, 256);
+Vector3ui map_dimensions(512, 512, 512);
 float voxel_side_length = 0.02f; // x cm voxel size
 
 bool new_data_received;
@@ -258,6 +259,10 @@ int main(int argc, char* argv[])
 	shared_ptr<DistanceVoxelMap> pbaDistanceVoxmap = dynamic_pointer_cast<DistanceVoxelMap>(
 			gvl->getMap("pbaDistanceVoxmap"));
 
+	gvl->addMap(MT_PROBAB_MULTI_VOXELMAP, "multiProbVoxmap");
+	shared_ptr<gpu_voxels::voxelmap::MultiProbVoxelMap> multiProbVoxmap = dynamic_pointer_cast<gpu_voxels::voxelmap::MultiProbVoxelMap>(
+			gvl->getMap("multiProbVoxmap"));
+
 	gvl->addMap(MT_PROBAB_VOXELMAP, "erodeTempVoxmap1");
 	shared_ptr<ProbVoxelMap> erodeTempVoxmap1 = dynamic_pointer_cast<ProbVoxelMap>(gvl->getMap("erodeTempVoxmap1"));
 	gvl->addMap(MT_PROBAB_VOXELMAP, "erodeTempVoxmap2");
@@ -266,10 +271,6 @@ int main(int argc, char* argv[])
 	gvl->addMap(MT_COUNTING_VOXELLIST, "countingVoxelList");
 	shared_ptr<CountingVoxelList> countingVoxelList = dynamic_pointer_cast<CountingVoxelList>(
 			gvl->getMap("countingVoxelList"));
-
-	/*gvl->addMap(MT_MULTIMODAL_VOXELLIST, "multiModalVoxelList");
-	shared_ptr<MultiModalVoxelList> mmVoxelList = dynamic_pointer_cast<MultiModalVoxelList>(
-			gvl->getMap("multiModalVoxelList"));*/
 
 	gvl->addMap(MT_COUNTING_VOXELLIST, "countingVoxelListFiltered");
 	shared_ptr<CountingVoxelList> countingVoxelListFiltered = dynamic_pointer_cast<CountingVoxelList>(
@@ -315,20 +316,27 @@ int main(int argc, char* argv[])
 			countingVoxelListFiltered->clearMap();
 			erodeTempVoxmap1->clearMap();
 			erodeTempVoxmap2->clearMap();
+			multiProbVoxmap->clearMap();
 
 			// Insert the CAMERA data (now in world coordinates) into the list
 			// TODO PointCloud is inserted into map here --> Change type of PointCloud!
-			countingVoxelList->insertPointCloud(my_point_cloud, eBVM_OCCUPIED);
-			countingVoxelList->insertPointCloud(my_point_cloud2, eBVM_OCCUPIED);
-			gvl->visualizeMap("countingVoxelList");
+			//countingVoxelList->insertPointCloud(my_point_cloud, eBVM_OCCUPIED);
+			//countingVoxelList->insertPointCloud(my_point_cloud2, eBVM_OCCUPIED);
+			//multiProbVoxmap->insertPointCloud(my_point_cloud, eBVM_OCCUPIED);
+			//multiProbVoxmap->insertPointCloud(my_point_cloud2, eBVM_OCCUPIED);
+			//BitVoxel<1>* temp = new BitVoxel<1>();
+			multiProbVoxmap->insertSensorData(my_point_cloud, Vector3f(0, 0, 0), false, eBVM_OCCUPIED, 0.7);
+			multiProbVoxmap->insertSensorData(my_point_cloud2, Vector3f(0, 0, 0), false, eBVM_OCCUPIED, 0.3);
+			//gvl->visualizeMap("countingVoxelList");
+			gvl->visualizeMap("multiProbVoxmap");
 
-			countingVoxelListFiltered->merge(countingVoxelList);
+			/*countingVoxelListFiltered->merge(countingVoxelList);
 			countingVoxelListFiltered->remove_underpopulated(filter_threshold);
-			gvl->visualizeMap("countingVoxelListFiltered");
+			gvl->visualizeMap("countingVoxelListFiltered");*/
 
 			//gvl->visualizeMap("multiModalVoxelList");
 
-			LOGGING_INFO(Gpu_voxels, "erode voxels into pbaDistanceVoxmap" << endl);
+			/*LOGGING_INFO(Gpu_voxels, "erode voxels into pbaDistanceVoxmap" << endl);
 			erodeTempVoxmap1->merge(countingVoxelListFiltered);
 			if (erode_threshold > 0) {
 				erodeTempVoxmap1->erodeInto(*erodeTempVoxmap2, erode_threshold);
@@ -336,19 +344,19 @@ int main(int argc, char* argv[])
 				erodeTempVoxmap1->erodeLonelyInto(
 						*erodeTempVoxmap2); //erode only "lonely voxels" without occupied neighbors
 			}
-			pbaDistanceVoxmap->mergeOccupied(erodeTempVoxmap2);
+			pbaDistanceVoxmap->mergeOccupied(erodeTempVoxmap2);*/
 
 			// Calculate the distance map:
-			LOGGING_INFO(Gpu_voxels,
+			/*LOGGING_INFO(Gpu_voxels,
 						 "calculate distance map for " << countingVoxelList->getDimensions().x << " occupied voxels"
 													   << endl);
-			pbaDistanceVoxmap->parallelBanding3D();
+			pbaDistanceVoxmap->parallelBanding3D();*/
 
-			LOGGING_INFO(Gpu_voxels, "start cloning pbaDistanceVoxmap" << endl);
+			/*LOGGING_INFO(Gpu_voxels, "start cloning pbaDistanceVoxmap" << endl);
 			pbaDistanceVoxmapVisual->clone(*(pbaDistanceVoxmap.get()));
 			LOGGING_INFO(Gpu_voxels, "done cloning pbaDistanceVoxmap" << endl);
 
-			gvl->visualizeMap("pbaDistanceVoxmapVisual");
+			gvl->visualizeMap("pbaDistanceVoxmapVisual");*/
 			gvl->visualizePrimitivesArray("measurementPoints");
 
 			// For the measurement points we query the clearance to the closest obstacle:

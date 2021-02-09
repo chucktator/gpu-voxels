@@ -24,6 +24,7 @@
 #define GPU_VOXELS_VOXELMAP_VOXELMAP_H_INCLUDED
 
 #include <gpu_voxels/voxelmap/ProbVoxelMap.h>
+#include <gpu_voxels/voxelmap/MultiProbVoxelMap.h>
 #include <gpu_voxels/voxelmap/BitVoxelMap.h>
 #include <gpu_voxels/voxelmap/DistanceVoxelMap.h>
 #include <gpu_voxels/helpers/common_defines.h>
